@@ -1,15 +1,82 @@
+<?php
+// Define variables and initialize with empty values
+$username = $email = $password = $bloodGroup = "";
+$usernameErr = $emailErr = $passwordErr = $bloodGroupErr = "";
+
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Validate Username
+    if (empty($_POST["username"])) {
+        $usernameErr = "Username is required";
+    } else {
+        $username = $_POST["username"];
+    }
+
+    // Validate Email
+    if (empty($_POST["email"])) {
+        $emailErr = "Email is required";
+    } else {
+        $email = $_POST["email"];
+    }
+
+    // Validate Password
+    if (empty($_POST["password"])) {
+        $passwordErr = "Password is required";
+    } else {
+        $password = $_POST["password"];
+        // Password validation (must have at least one uppercase, one lowercase, and one number)
+        if (!preg_match("/[A-Z]/", $password) || !preg_match("/[a-z]/", $password) || !preg_match("/[0-9]/", $password) || strlen($password) < 6) {
+            $passwordErr = "Password must have at least one uppercase letter, one lowercase letter, one number, and be at least 6 characters long.";
+        }
+    }
+
+    // Validate Blood Group
+    if (empty($_POST["bloodGroup"]) || $_POST["bloodGroup"] == "Select Blood Group") {
+        $bloodGroupErr = "Blood Group is required";
+    } else {
+        $bloodGroup = $_POST["bloodGroup"];
+    }
+
+    // If there are no errors, insert data into the database
+    if (empty($usernameErr) && empty($emailErr) && empty($passwordErr) && empty($bloodGroupErr)) {
+        // Database connection (Make sure to change the database connection details)
+        $servername = "localhost";
+        $username_db = "root";
+        $password_db = "";
+        $dbname = "blood_bank";
+
+        // Create connection
+        $conn = new mysqli($servername, $username_db, $password_db, $dbname);
+
+        // Check connection
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        // Insert data into the database
+        $sql = "INSERT INTO users (username, email, password, blood_group) VALUES ('$username', '$email', '$password', '$bloodGroup')";
+
+        if ($conn->query($sql) === TRUE) {
+            echo "Registration successful!";
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
+
+        // Close connection
+        $conn->close();
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Blood Bank System</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <title>Document</title>
     <style>
         body {
             background-color: #f8f9fa;
@@ -66,7 +133,6 @@
             width: 100%;
             padding: 12px;
             font-weight: bold;
-
         }
 
         .btn-login:hover {
@@ -82,143 +148,50 @@
 <body>
     <div class="container">
         <h2>Registration</h2>
-        <form id="registrationForm" action="register.php" method="post">
+        <form id="registrationForm" action="" method="post">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
-                <small id="usernameError" class="text-danger d-none">Username is required</small>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Enter username"
+                    value="<?php echo $username; ?>">
+                <small id="usernameError" class="text-danger"><?php echo $usernameErr; ?></small>
             </div>
             <div class="form-group">
                 <label for="email">Email address</label>
                 <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp"
-                       placeholder="Enter email">
+                    placeholder="Enter email" value="<?php echo $email; ?>">
                 <small id="emailHelp" class="form-text text-muted">
-                    We'll never share your email with anyone
-                    else.
+                    We'll never share your email with anyone else.
                 </small>
-                <small id="emailError" class="text-danger d-none">Email is required</small>
+                <small id="emailError" class="text-danger"><?php echo $emailErr; ?></small>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password"
+                    value="<?php echo $password; ?>">
                 <small id="passwordHelp" class="form-text text-muted">
-                    Password must have at least one uppercase letter,
-                    one lowercase letter, one number, and be at least 6 characters long.
+                    Password must have at least one uppercase letter, one lowercase letter, one number, and be at least 6 characters long.
                 </small>
-                <small id="passwordError" class="text-danger d-none">
-                    Password is required and must meet the
-                    criteria
-                </small>
+                <small id="passwordError" class="text-danger"><?php echo $passwordErr; ?></small>
             </div>
             <div class="form-group">
                 <label for="bloodGroup">Blood Group</label>
                 <select class="form-control" id="bloodGroup" name="bloodGroup">
                     <option disabled selected>Select Blood Group</option>
-                    <option>A+</option>
-                    <option>A-</option>
-                    <option>B+</option>
-                    <option>B-</option>
-                    <option>AB+</option>
-                    <option>AB-</option>
-                    <option>O+</option>
-                    <option>O-</option>
+                    <option value="A+" <?php echo $bloodGroup == "A+" ? 'selected' : ''; ?>>A+</option>
+                    <option value="A-" <?php echo $bloodGroup == "A-" ? 'selected' : ''; ?>>A-</option>
+                    <option value="B+" <?php echo $bloodGroup == "B+" ? 'selected' : ''; ?>>B+</option>
+                    <option value="B-" <?php echo $bloodGroup == "B-" ? 'selected' : ''; ?>>B-</option>
+                    <option value="AB+" <?php echo $bloodGroup == "AB+" ? 'selected' : ''; ?>>AB+</option>
+                    <option value="AB-" <?php echo $bloodGroup == "AB-" ? 'selected' : ''; ?>>AB-</option>
+                    <option value="O+" <?php echo $bloodGroup == "O+" ? 'selected' : ''; ?>>O+</option>
+                    <option value="O-" <?php echo $bloodGroup == "O-" ? 'selected' : ''; ?>>O-</option>
                 </select>
-                <small id="bloodGroupError" class="text-danger d-none">Blood Group is required</small>
+                <small id="bloodGroupError" class="text-danger"><?php echo $bloodGroupErr; ?></small>
             </div>
-            <button type="submit" class="btn btn-primary" id="registerButton" name="submit" onclick="register.php">Register</button>
+            <button type="submit" class="btn btn-primary" id="registerButton" name="submit">Register</button>
             <a href="login.html" class="btn btn-login" role="button">Login</a>
         </form>
     </div>
-    <?php
-    // Database connection settings
-    $host = "localhost";
-    $username = "root";
-    $password = "";
-    $dbname = "UserRegistration";
-
-    // Create connection
-    $conn = new mysqli($host, $username, $password, $dbname);
-
-    // Check connection
-    if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-    }
-
-    // If form is submitted
-    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
-    $user = $_POST['username'];
-    $email = $_POST['email'];
-    $pass = $_POST['password'];
-    $bloodGroup = $_POST['bloodGroup'];
-
-    // Validate input
-    if (empty($user) || empty($email) || empty($pass) || $bloodGroup === "Select Blood Group") {
-    echo "All fields are required!";
-    } else {
-    // Hash the password (optional for security)
-    $hashedPass = password_hash($pass, PASSWORD_DEFAULT);
-
-    // Prepare and bind SQL statement
-    $stmt = $conn->prepare("INSERT INTO users (username, email, password, blood_group) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssss", $user, $email, $hashedPass, $bloodGroup);
-
-    // Execute and check result
-    if ($stmt->execute()) {
-    echo "Registration successful!";
-    } else {
-    echo "Error: " . $stmt->error;
-    }
-
-    // Close the statement
-    $stmt->close();
-    }
-    }
-
-    // Close the connection
-    $conn->close();
-    ?>
-
-
-    <script>
-        document.getElementById('registrationForm').addEventListener('submit', function (event) {
-
-            event.preventDefault();
-
-
-            var username = document.getElementById('username').value.trim();
-            var email = document.getElementById('email').value.trim();
-            var password = document.getElementById('password').value.trim();
-            var bloodGroup = document.getElementById('bloodGroup').value.trim();
-
-
-            document.getElementById('usernameError').classList.toggle('d-none', username !== '');
-            document.getElementById('emailError').classList.toggle('d-none', email !== '');
-            document.getElementById('passwordError').classList.toggle('d-none', password !== '');
-            document.getElementById('bloodGroupError').classList.toggle('d-none', bloodGroup !== 'Select Blood Group');
-
-
-            if (username === '' || email === '' || password === '' || bloodGroup === 'Select Blood Group') {
-                return;
-            }
-
-            var uppercaseRegex = /[A-Z]/;
-            var lowercaseRegex = /[a-z]/;
-            var numberRegex = /[0-9]/;
-            var validPassword = uppercaseRegex.test(password) && lowercaseRegex.test(password) && numberRegex.test(password) && password.length >= 6;
-
-
-            document.getElementById('passwordError').classList.toggle('d-none', validPassword);
-
-
-            if (!validPassword) {
-                return;
-            }
-
-            this.submit();
-        });
-    </script>
-
-
 </body>
 
 </html>
