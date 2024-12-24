@@ -124,44 +124,71 @@
         </form>
     </div>
 
-    <script>
-        document.getElementById('registrationForm').addEventListener('submit', function (event) {
+   <script>
+    document.getElementById('registrationForm').addEventListener('submit', function (event) {
+        event.preventDefault();  // Prevent default form submission
 
-            event.preventDefault();
+        var username = document.getElementById('username').value.trim();
+        var email = document.getElementById('email').value.trim();
+        var password = document.getElementById('password').value.trim();
+        var bloodGroup = document.getElementById('bloodGroup').value.trim();
 
+        // Toggle error messages visibility based on form input
+        document.getElementById('usernameError').classList.toggle('d-none', username !== '');
+        document.getElementById('emailError').classList.toggle('d-none', email !== '');
+        document.getElementById('passwordError').classList.toggle('d-none', password !== '');
+        document.getElementById('bloodGroupError').classList.toggle('d-none', bloodGroup !== 'Select Blood Group');
 
-            var username = document.getElementById('username').value.trim();
-            var email = document.getElementById('email').value.trim();
-            var password = document.getElementById('password').value.trim();
-            var bloodGroup = document.getElementById('bloodGroup').value.trim();
+        // Check if any of the fields are empty
+        if (username === '' || email === '' || password === '' || bloodGroup === 'Select Blood Group') {
+            return;
+        }
 
+        // Validate password
+        var uppercaseRegex = /[A-Z]/;
+        var lowercaseRegex = /[a-z]/;
+        var numberRegex = /[0-9]/;
+        var validPassword = uppercaseRegex.test(password) && lowercaseRegex.test(password) && numberRegex.test(password) && password.length >= 6;
 
-            document.getElementById('usernameError').classList.toggle('d-none', username !== '');
-            document.getElementById('emailError').classList.toggle('d-none', email !== '');
-            document.getElementById('passwordError').classList.toggle('d-none', password !== '');
-            document.getElementById('bloodGroupError').classList.toggle('d-none', bloodGroup !== 'Select Blood Group');
+        document.getElementById('passwordError').classList.toggle('d-none', validPassword);
 
+        if (!validPassword) {
+            return;
+        }
 
-            if (username === '' || email === '' || password === '' || bloodGroup === 'Select Blood Group') {
-                return;
+        // Prepare the data to send
+        var formData = {
+            username: username,
+            email: email,
+            password: password,
+            bloodGroup: bloodGroup
+        };
+
+        // Send the data to the API using Fetch
+        fetch('http://52.183.5.29:4141/api/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',  // Send data as JSON
+            },
+            body: JSON.stringify(formData)  // Convert form data to JSON
+        })
+        .then(response => response.json())  // Parse JSON response
+        .then(data => {
+            if (data.success) {
+                alert('Registration successful!');
+                // Optionally, redirect to login page or clear the form
+                window.location.href = 'login.html'; // Example redirect after successful registration
+            } else {
+                alert('Registration failed: ' + data.message); // Show error message
             }
-
-            var uppercaseRegex = /[A-Z]/;
-            var lowercaseRegex = /[a-z]/;
-            var numberRegex = /[0-9]/;
-            var validPassword = uppercaseRegex.test(password) && lowercaseRegex.test(password) && numberRegex.test(password) && password.length >= 6;
-
-
-            document.getElementById('passwordError').classList.toggle('d-none', validPassword);
-
-
-            if (!validPassword) {
-                return;
-            }
-
-            this.submit();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while processing your registration. Please try again.');
         });
-    </script>
+    });
+</script>
+
 </body>
 
 </html>
