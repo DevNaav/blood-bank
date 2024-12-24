@@ -7,11 +7,7 @@ const cors=require("cors");
 
 database.connect();
 app.use(express.json());
-app.use(cors({
-  origin:"*",
-  methods:["GET","PUT",'DELETE',"UPDATE","POST"],
-  credentials:true
-}));
+app.use(cors("*"));
 app.use("/api/", userRoutes);
 app.get('/',(req,res)=>{
   res.send("Sbh  bhdia hai");
