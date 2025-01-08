@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
 		// Define the role field with type String and enum values of "Admin", "Student", or "Visitor"
 		bloodGroup: {
 			type: String,
-			enum: ["B+", "A+"],
+			enum: ["A+", "A-","B+","B-","AB+","AB-","O+","O-"],
 			required: true,
 		},
 		// Add timestamps for when the document is created and last modified
