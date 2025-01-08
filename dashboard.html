@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Blood Bank System</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="col-md-6 offset-md-3">
+            <h2 class="text-center">Welcome to the Dashboard</h2>
+            <div id="userInfo" class="mt-4">
+                <h4>User Information</h4>
+                <p><strong>Username:</strong> <span id="username"></span></p>
+                <p><strong>Email:</strong> <span id="email"></span></p>
+            </div>
+            <button id="logoutButton" class="btn btn-danger btn-block mt-4">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        // Simulated user data (this would normally come from the backend)
+        const user = {
+            username: "john_doe", // You would fetch this from the API response
+            email: "john.doe@example.com" // Example email
+        };
+
+        // Display user data
+        document.getElementById('username').innerText = user.username;
+        document.getElementById('email').innerText = user.email;
+
+        // Handle logout action
+        document.getElementById('logoutButton').addEventListener('click', function() {
+            // Clear any session data or authentication tokens (if used)
+            // Example: localStorage.removeItem('authToken');
+            alert('You have logged out.');
+            window.location.href = 'login.html'; // Redirect to the login page
+        });
+    </script>
+</body>
+</html>
