@@ -21,6 +21,12 @@
     </div>
 
     <script>
+        // Check if the user is authenticated
+        if (!localStorage.getItem('authToken')) {
+            // If not, redirect to login page
+            window.location.href = 'login.html';
+        }
+
         // Simulated user data (this would normally come from the backend)
         const user = {
             username: "john_doe", // You would fetch this from the API response
@@ -33,10 +39,9 @@
 
         // Handle logout action
         document.getElementById('logoutButton').addEventListener('click', function() {
-            // Clear any session data or authentication tokens (if used)
-            // Example: localStorage.removeItem('authToken');
-            alert('You have logged out.');
-            window.location.href = 'login.html'; // Redirect to the login page
+            // Clear authentication token
+            localStorage.removeItem('authToken');
+            window.location.href = 'login.html'; // Redirect to login page after logout
         });
     </script>
 </body>
