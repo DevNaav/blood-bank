@@ -25,6 +25,11 @@
             // If not, redirect to login page
             window.location.href = 'login.html';
         }
+// After the page loads, replace the URL with a cleaner one
+if (window.location.pathname === '/dashboard.html') {
+    // Change the URL to something like '/dashboard/12345'
+    history.replaceState(null, null, '/dashboard/12345');
+}
 
         // Handle logout action
         document.getElementById('logoutButton').addEventListener('click', function() {
