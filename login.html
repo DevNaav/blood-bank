@@ -8,52 +8,51 @@
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="col-md-6 offset-md-3">
-            <h2 class="text-center">Login</h2>
-            <form id="loginForm">
-                <div class="form-group">
-                    <label for="loginUsername">Username</label>
-                    <input type="text" class="form-control" id="loginUsername" placeholder="Enter username" required>
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Password</label>
-                    <input type="password" class="form-control" id="loginPassword" placeholder="Password" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Login</button>
-            </form>
-        </div>
+    <div class="col-md-6 offset-md-3">
+        <h2 class="text-center">Login</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="loginUsername">Username</label>
+                <input type="text" class="form-control" id="loginUsername" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" class="form-control" id="loginPassword" placeholder="Password">
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
-            e.preventDefault(); // Prevent default form submission
+        // Login form submission
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            event.preventDefault();
 
-            const formData = {
-                username: document.getElementById('loginUsername').value,
-                password: document.getElementById('loginPassword').value
-            };
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const formData = { username, password };
 
             fetch('https://api.nailsbyru.com/api/login', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',  // Send data as JSON
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData)  // Convert form data to JSON
+                body: JSON.stringify(formData)
             })
-            .then(response => response.json())  // Parse JSON response
+            .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Login successful!');
-                    // Optionally, redirect to another page after successful login
-                    window.location.href = 'dashboard.html'; // Example redirect after successful login
+                    // Save token to localStorage (or sessionStorage) to keep the user logged in
+                    localStorage.setItem('authToken', data.token);  // Assuming the API returns a JWT token
+                    window.location.href = 'dashboard.html';  // Redirect to the dashboard
                 } else {
-                    alert('Login failed: ' + data.message); // Show error message
+                    alert('Login failed: ' + data.message);
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while processing your login. Please try again.');
+                alert('An error occurred during login.');
             });
         });
     </script>
