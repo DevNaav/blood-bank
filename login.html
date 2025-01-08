@@ -24,37 +24,54 @@
     </div>
 
     <script>
-        // Login form submission
-        document.getElementById('loginForm').addEventListener('submit', function (event) {
-            event.preventDefault();
+       document.getElementById('loginForm').addEventListener('submit', function (event) {
+    event.preventDefault();
 
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
 
-            const formData = { username, password };
+    // Basic validation: check if both username and password are provided
+    if (!username || !password) {
+        alert('Please enter both username and password.');
+        return;
+    }
 
-            fetch('https://api.nailsbyru.com/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Save token to localStorage (or sessionStorage) to keep the user logged in
-                    localStorage.setItem('authToken', data.token);  // Assuming the API returns a JWT token
-                    window.location.href = 'dashboard.html';  // Redirect to the dashboard
-                } else {
-                    alert('Login failed: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred during login.');
-            });
+    // Set up headers for the API request
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    // Create the raw body with the form data
+    const raw = JSON.stringify({
+        "email": username,   // Assuming email field uses the username input
+        "password": password
+    });
+
+    // Prepare the request options
+    const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow"
+    };
+
+    // Make the API call
+    fetch("https://api.nailsbyru.com/api/login", requestOptions)
+        .then(response => response.json())  // Handle response as JSON
+        .then(data => {
+            if (data.success) {
+                // Save the token to localStorage (or sessionStorage)
+                localStorage.setItem('authToken', data.token);  // Assuming the API returns a JWT token
+                window.location.href = 'dashboard.html';  // Redirect to the dashboard
+            } else {
+                alert('Login failed: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred during login.');
         });
+});
+
     </script>
 </body>
 </html>
