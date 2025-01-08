@@ -10,11 +10,10 @@
 <body>
     <div class="container mt-5">
         <div class="col-md-6 offset-md-3">
-            <h2 class="text-center">Welcome to the Dashboard</h2>
+            <h2 class="text-center">Dashboard</h2>
             <div id="userInfo" class="mt-4">
-                <h4>User Information</h4>
-                <p><strong>Username:</strong> <span id="username"></span></p>
-                <p><strong>Email:</strong> <span id="email"></span></p>
+                <h4>Login Successful!</h4>
+                <p>You have successfully logged into the system.</p>
             </div>
             <button id="logoutButton" class="btn btn-danger btn-block mt-4">Logout</button>
         </div>
@@ -26,16 +25,6 @@
             // If not, redirect to login page
             window.location.href = 'login.html';
         }
-
-        // Simulated user data (this would normally come from the backend)
-        const user = {
-            username: "john_doe", // You would fetch this from the API response
-            email: "john.doe@example.com" // Example email
-        };
-
-        // Display user data
-        document.getElementById('username').innerText = user.username;
-        document.getElementById('email').innerText = user.email;
 
         // Handle logout action
         document.getElementById('logoutButton').addEventListener('click', function() {
